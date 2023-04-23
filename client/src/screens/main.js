@@ -13,10 +13,11 @@ function MainScreen(props) {
 
   var user = useSelector(selectUser);
 
+
   return (
     <div>
       
-      {!user ? (<AuthScreen />) : (  <DashScreen />)}
+      {false ? (<AuthScreen />) : (  <DashScreen />)}
     </div>
   );
 }

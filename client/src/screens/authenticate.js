@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
-import { Form, Button } from 'react-bootstrap';
+import { Form, Button, Spinner } from 'react-bootstrap';
 
 import { useSelector, useDispatch } from 'react-redux';
 import {
     signup,
     login,
-
     selectUser,
 } from '../store/user/authSlice';
 
-import Spinner from 'react-bootstrap/Spinner';
 
 
 
 function LoaderComponent() {
   return (
     <div>
-      <Spinner animation="grow" size="sm" />
-      <Spinner animation="grow" />
+        <p>isahoia</p>
+        <Spinner animation="border" variant="dark"/>
+
+        <p>isahoia</p>
     </div>
   );
 }
