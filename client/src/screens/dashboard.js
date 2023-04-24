@@ -9,7 +9,7 @@ import { ReactComponent as Logo } from "../logo.svg";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import { BrowserRouter, Routes, Route, Link as RouteLink } from "react-router-dom";
+import { BrowserRouter, Routes, Route} from "react-router-dom";
 
 import ProfileScreen from './profile';
 import NotificationScreen from './notifications';
@@ -86,7 +86,7 @@ function DashScreen(props) {
     const dispatch = useDispatch();
 
     var user = useSelector(selectUser);
-    console.log(user)
+    // console.log(user)
 
     const logoutBtn = () => {
 

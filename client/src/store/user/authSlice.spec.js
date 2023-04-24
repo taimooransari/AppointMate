@@ -6,24 +6,17 @@ import userReducer, {
 describe('user reducer', () => {
     const initialState = {
         value: { name: "null", email: "null", uid: "null" },
+        AllUsers:[],
         status: 'idle',
     };
+    
     it('should handle initial state', () => {
         expect(userReducer(undefined, { type: 'unknown' })).toEqual({
             value: { name: "null", email: "null", uid: "null" },
+            AllUsers:[],
             status: 'idle',
         });
     });
-
-    // it('should handle increment', () => {
-    //   const actual = userReducer(initialState, increment());
-    //   expect(actual.value).toEqual(4);
-    // });
-
-    // it('should handle decrement', () => {
-    //   const actual = userReducer(initialState, decrement());
-    //   expect(actual.value).toEqual(2);
-    // });
     it('should handle logout', () => {
         const actual = userReducer(initialState, logoutUser());
         expect(actual.value).toEqual({ name: "null", email: "null", uid: "null" });

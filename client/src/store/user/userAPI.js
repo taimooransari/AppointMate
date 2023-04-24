@@ -1,6 +1,6 @@
 import { db, auth } from "../../fire.js";
 import { createUserWithEmailAndPassword, signOut, signInWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc,getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, query, collection, getDocs, where } from "firebase/firestore";
 
 
 
@@ -96,3 +96,60 @@ export async function loginUser(user) {
 
     return regUser;
 }
+
+
+
+
+export async function getAllUsers(uid) {
+
+
+    var users = []
+
+    const q = query(collection(db, "users"), where("uid", "!=", uid));
+
+    const querySnapshot = await getDocs(q);
+
+    querySnapshot.forEach((doc) => {
+        users.push(doc.data())
+    });
+
+    return users
+}
+
+export async function fetchUserData(uid) {
+
+
+    let regUser;
+    const docRef = doc(db, "users", uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+        regUser = docSnap.data();
+    } else {
+        // docSnap.data() will be undefined in this case
+        console.log("No such document!");
+    }
+
+    return regUser;
+
+}
+
+
+
+
+// export async function getAllUsers(uid) {
+
+
+//     var users = new HashTable();
+
+//     const q = query(collection(db, "users"), where("uid", "!=", uid));
+
+//     const querySnapshot = await getDocs(q);
+
+//     querySnapshot.forEach((doc) => {
+//         let usr = doc.data()
+//         users.put(usr.email, usr);
+//     });
+
+//     return users;
+// }

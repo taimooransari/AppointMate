@@ -1,12 +1,13 @@
-class PairingHeapNode {
-    constructor(key) {
+ class PairingHeapNode {
+    constructor(key, data) {
       this.key = key;
+      this.data = data;
       this.parent = null;
       this.children = [];
     }
   }
   
-  class PairingHeap {
+export default class PairingHeap {
     constructor() {
       this.root = null;
     }
@@ -15,8 +16,8 @@ class PairingHeapNode {
       return this.root === null;
     }
   
-    insert(key) {
-      const node = new PairingHeapNode(key);          // Create a new node with the given key
+    insert(key, data) {
+      const node = new PairingHeapNode(key,data);          // Create a new node with the given key
       this.root = this.merge(this.root, node);        // Merge the new node with the root node of the heap
     }
   
@@ -83,29 +84,29 @@ class PairingHeapNode {
   }
   
   
-  let heap = new PairingHeap();
+  // let heap = new PairingHeap();
   
-  heap.insert(5);
-  heap.insert(30);
-  heap.insert(17);
-  heap.insert(1);
-  heap.insert(1291);
-  heap.insert(0.1);
-  heap.insert(1.1);
+  // heap.insert(5);
+  // heap.insert(30);
+  // heap.insert(17);
+  // heap.insert(1);
+  // heap.insert(1291);
+  // heap.insert(0.1);
+  // heap.insert(1.1);
   
   
   
-  console.log(heap.find_min(),heap.delete_min()); 
-  console.log(heap.find_min(),heap.delete_min()); 
-  console.log(heap.find_min(),heap.delete_min()); 
-  console.log(heap.find_min(),heap.delete_min()); 
-  heap.insert(55);
-  heap.insert(3);
-  heap.insert(330)
-  console.log(heap.find_min(),heap.delete_min()); 
-  console.log(heap.find_min(),heap.delete_min()); 
-  console.log(heap.find_min(),heap.delete_min()); 
-  console.log(heap.find_min(),heap.delete_min()); 
-  console.log(heap.find_min(),heap.delete_min()); 
-  console.log(heap.find_min(),heap.delete_min()); 
+  // console.log(heap.find_min(),heap.delete_min()); 
+  // console.log(heap.find_min(),heap.delete_min()); 
+  // console.log(heap.find_min(),heap.delete_min()); 
+  // console.log(heap.find_min(),heap.delete_min()); 
+  // heap.insert(55);
+  // heap.insert(3);
+  // heap.insert(330)
+  // console.log(heap.find_min(),heap.delete_min()); 
+  // console.log(heap.find_min(),heap.delete_min()); 
+  // console.log(heap.find_min(),heap.delete_min()); 
+  // console.log(heap.find_min(),heap.delete_min()); 
+  // console.log(heap.find_min(),heap.delete_min()); 
+  // console.log(heap.find_min(),heap.delete_min()); 
   

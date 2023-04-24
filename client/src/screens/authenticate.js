@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Form, Button, Spinner } from 'react-bootstrap';
 
 import { useSelector, useDispatch } from 'react-redux';
@@ -34,6 +34,14 @@ function AuthScreen() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+// useEffect(() => {
+//     dispatch(login({ email: "v@gmail.com", password: "12345678" }));
+
+// }, [])
+
+
+
+
 
     const handleSubmit = (event) => {
         event.preventDefault();

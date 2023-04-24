@@ -1,8 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { signupUser, logout, loginUser } from './userAPI';
+import { signupUser, logout, loginUser, getAllUsers, fetchUserData } from './userAPI';
+import HashTable from '../../hashtable';
+
 
 const initialState = {
     value: null,
+    AllUsers: new HashTable(),
     status: 'idle',
 };
 
@@ -18,7 +21,7 @@ export const signup = createAsyncThunk(
     async (usr) => {
         const response = await signupUser(usr);
         // The value we return becomes the `fulfilled` action payload
-        console.log("data.  ", response);
+        // console.log("data.  ", response);
         return response;
     }
 );
@@ -28,16 +31,44 @@ export const login = createAsyncThunk(
     async (usr) => {
         const response = await loginUser(usr);
         // The value we return becomes the `fulfilled` action payload
-        console.log("data.  ", response);
+        // console.log("data.  ", response);
         return response;
     }
 );
+
+
+
+
+
+export const fetchData = createAsyncThunk(
+    'user/fetchData',
+    async (uid) => {
+        const response = await fetchUserData(uid);
+        // The value we return becomes the `fulfilled` action payload
+        // console.log("data.  ", response);
+        return response;
+    }
+);
+
+
+export const fetchAll = createAsyncThunk(
+    'user/fetchAll',
+    async (uid) => {
+        const response = await getAllUsers(uid);
+        // The value we return becomes the `fulfilled` action payload
+        // console.log("data.  ", response);
+        return response;
+    }
+);
+
+
+
 
 export const logoutUser = createAsyncThunk(
     'user/logout',
     async () => {
         await logout();
-       
+
     }
 );
 
@@ -64,7 +95,7 @@ export const authSlice = createSlice({
                 state.status = 'loading';
             })
             .addCase(signup.fulfilled, (state, action) => {
-                console.log("payload.  ", action.payload);
+                // console.log("payload.  ", action.payload);
                 state.status = 'idle';
                 state.value = action.payload;
             })
@@ -75,7 +106,18 @@ export const authSlice = createSlice({
                 state.status = 'loading';
             })
             .addCase(login.fulfilled, (state, action) => {
-                console.log("payload.  ", action.payload);
+                // console.log("payload.  ", action.payload);
+                state.status = 'idle';
+                state.value = action.payload;
+            })
+
+
+
+            .addCase(fetchData.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(fetchData.fulfilled, (state, action) => {
+                // console.log("payload.  ", action.payload);
                 state.status = 'idle';
                 state.value = action.payload;
             })
@@ -88,6 +130,24 @@ export const authSlice = createSlice({
             .addCase(logoutUser.fulfilled, (state) => {
                 state.status = 'idle';
                 state.value = null;
+
+            })
+
+
+
+
+            .addCase(fetchAll.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(fetchAll.fulfilled, (state, action) => {
+                state.status = 'idle';
+                let data = action.payload;
+                for (let i = 0; i < data.length; i++) {
+                    let usr = data[i];
+                    state.AllUsers.put(usr.email, usr);
+                }
+
+                // state.AllUsers = action.payload;
             });
     },
 
@@ -99,6 +159,7 @@ export const { updateUser } = authSlice.actions;
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
 export const selectUser = (state) => state.user.value;
+export const selectAll = (state) => state.user.AllUsers;
 
 // We can also write thunks by hand, which may contain both sync and async logic.
 // Here's an example of conditionally dispatching actions based on current state.
