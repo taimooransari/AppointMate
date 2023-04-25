@@ -10,14 +10,11 @@ import {
 
 
 
-
 function LoaderComponent() {
   return (
     <div>
-        <p>isahoia</p>
         <Spinner animation="border" variant="dark"/>
 
-        <p>isahoia</p>
     </div>
   );
 }

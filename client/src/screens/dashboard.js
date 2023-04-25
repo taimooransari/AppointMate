@@ -16,6 +16,7 @@ import NotificationScreen from './notifications';
 import AppointmentScreen from './appointment';
 
 import { useNavigate } from "react-router-dom";
+import { flushApp } from '../store/appointment/appSlice';
 // import { createBrowserRouter } from "react-router-dom";
 
 
@@ -85,12 +86,13 @@ function NavBar(props) {
 function DashScreen(props) {
     const dispatch = useDispatch();
 
-    var user = useSelector(selectUser);
+    // var user = useSelector(selectUser);
     // console.log(user)
 
     const logoutBtn = () => {
 
         dispatch(logoutUser())
+        dispatch(flushApp())
     }
 
 

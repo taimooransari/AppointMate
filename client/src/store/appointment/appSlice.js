@@ -35,7 +35,8 @@ export const createApp = createAsyncThunk(
     async (data) => {
         const response = await addAppt(data);
         // The value we return becomes the `fulfilled` action payload
-        console.log("cr resp  ", response);
+
+
         return response;
     }
 );
@@ -66,9 +67,9 @@ export const appSlice = createSlice({
 
         // Use the PayloadAction type to declare the contents of `action.payload`
 
-        // updateUser: (state, action) => {
-        //     state.value = action.payload;
-        // },
+        flushApp: (state) => {
+            state.appt = new PairingHeap();
+        },
     },
 
     // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -83,15 +84,13 @@ export const appSlice = createSlice({
                 // console.log("payload.  ", action.payload);
                 state.status = 'idle';
                 let temp_apt = action.payload;
+                state.appt = new PairingHeap();
                 for (let i = 0; i < temp_apt.length; i++) {
                     let ap = temp_apt[i];
                     let key = ap.timestamp;
-
                     state.appt.insert(key, ap);
                 }
 
-
-                // console.log("satte.     ", state.appt);
             })
 
             .addCase(createApp.pending, (state) => {
@@ -103,7 +102,6 @@ export const appSlice = createSlice({
                 state.status = 'idle';
                 let ap = action.payload;
                 let key = ap.timestamp;
-                console.log(11111,key,ap);
                 state.appt.insert(key, ap);
 
                 // console.log("satte.     ", state.appt);
@@ -126,7 +124,7 @@ export const appSlice = createSlice({
 
 });
 
-// export const { updateUser } = authSlice.actions;
+export const { flushApp } = appSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
@@ -135,6 +133,7 @@ export const appSlice = createSlice({
 
 export const selectAppts = (state) => state.appointment.appt;
 export const selectInvites = (state) => state.appointment.invites;
+
 
 // We can also write thunks by hand, which may contain both sync and async logic.
 // Here's an example of conditionally dispatching actions based on current state.

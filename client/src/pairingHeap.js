@@ -10,6 +10,7 @@
 export default class PairingHeap {
     constructor() {
       this.root = null;
+      this.lst = [];
     }
   
     is_empty() {
@@ -17,7 +18,9 @@ export default class PairingHeap {
     }
   
     insert(key, data) {
-      const node = new PairingHeapNode(key,data);          // Create a new node with the given key
+      this.lst.push(data);
+      const index = this.lst.length - 1;
+      const node = new PairingHeapNode(key,index);          // Create a new node with the given key
       this.root = this.merge(this.root, node);        // Merge the new node with the root node of the heap
     }
   
@@ -25,7 +28,7 @@ export default class PairingHeap {
       if (this.is_empty()) {
         throw new Error('Heap is empty');             // Checks for empty heap
       }
-      return this.root.key;                           // Returns the key of the root node
+      return this.lst [this.root.data];                           // Returns the key of the root node
     }
   
     delete_min() {
@@ -38,7 +41,7 @@ export default class PairingHeap {
       } else {
         this.root = null;                             // If the minimum node has no children, set the root to null
       }
-      return min_node.key;                            // Returns key of minimum node
+      return this.lst[ min_node.data   ]   ;                      // Returns key of minimum node
     }
   
     merge(heap1, heap2) {
@@ -60,6 +63,22 @@ export default class PairingHeap {
         heap2.children.push(heap1);
         return heap2;
       }
+    }
+
+    allElements() {
+      const elements = [];
+      if (this.is_empty()) {
+        return elements;   // Return empty array for an empty heap
+      }
+      const stack = [this.root];
+      while (stack.length > 0) {
+        const node = stack.pop();
+        elements.push(node.data);
+        for (let i = node.children.length - 1; i >= 0; i--) {
+          stack.push(node.children[i]);
+        }
+      }
+      return elements;
     }
   
     pairwise_merge(nodes) {

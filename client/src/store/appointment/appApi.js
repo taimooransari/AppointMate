@@ -9,7 +9,6 @@ export async function getAllApp(email) {
     var appts = []
 
     const q = query(collection(db, "appointments"), where("people", "array-contains", email));
-    // console.log("get all app")
     const querySnapshot = await getDocs(q);
 
     querySnapshot.forEach((doc) => {
@@ -18,7 +17,6 @@ export async function getAllApp(email) {
         appts.push(a)
     });
 
-    // console.log("apppppt.  ", appts)
 
     return appts;
 }
@@ -28,8 +26,7 @@ export async function getAllApp(email) {
 
 
 export async function addAppt(appt) {
-    // if (user.email && user.password && user.name) {
-    console.log("here async");
+
 
     const docRef = await addDoc(collection(db, "appointments"), appt);
 
@@ -42,7 +39,6 @@ export async function addAppt(appt) {
 
 
 export async function addInvite(inv) {
-    // if (user.email && user.password && user.name) {
 
     await setDoc(doc(db, "invites", inv.id), inv)
         .then((document) => {
@@ -50,10 +46,8 @@ export async function addInvite(inv) {
         }
         )
         .catch((error) => {
-            //   const errorCode = error.code;
             const errorMessage = error.message;
             alert(errorMessage);
-            // ..
         });
 
     return false;
