@@ -70,6 +70,13 @@ function AppointmentScreen() {
     const [name, setName] = useState("example@gmail.com");
 
 
+
+    // const [showCancel, setShowCancel] = useState(false);
+    // const [showTaken, setShowTaken] = useState(false);
+    // const [showPending, setShowPending] = useState(false);
+    const [selectedOption, setSelectedOption] = useState("Scheduled");
+
+
     useEffect(() => {
         if (myAppt.length > 0) {
             let order = [];
@@ -125,10 +132,8 @@ function AppointmentScreen() {
 
 
 
-            <h1>Upcoming</h1>
+            <h1>All Appointments</h1>
 
-
-            {next ? <AppCard lst={[next]} isUpcoming={true} /> : null}
 
 
             <>
@@ -188,9 +193,41 @@ function AppointmentScreen() {
                 </Modal>
             </>
 
-            <h1>All Appointments</h1>
-
-            <AppCard lst={ListOfAppointments} isUpcoming={false} func={updateDetails} />
+            <Form>
+                <div key={`inline-radio`} className="mb-3">
+                    <Form.Check
+                        inline
+                        label="Upcoming"
+                        name="group1"
+                        type={"radio"}
+                        id={`inline-radio-1`}
+                        value="Scheduled"
+                        checked={selectedOption === "Scheduled"}
+                        onChange={(e) => setSelectedOption(e.target.value)}
+                    />
+                    <Form.Check
+                        inline
+                        label="Cancelled"
+                        name="group1"
+                        type={"radio"}
+                        id={`inline-radio-2`}
+                        value="Cancelled"
+                        checked={selectedOption === "Cancelled"}
+                        onChange={(e) => setSelectedOption(e.target.value)}
+                    />
+                    <Form.Check
+                        inline
+                        name="group1"
+                        label="Taken"
+                        type={"radio"}
+                        id={`inline-radio-3`}
+                        value="Taken"
+                        checked={selectedOption === "Taken"}
+                        onChange={(e) => setSelectedOption(e.target.value)}
+                    />
+                </div>
+            </Form>
+            <AppCard lst={ListOfAppointments} isUpcoming={false} func={updateDetails} status={selectedOption} />
 
         </div>
 
@@ -210,6 +247,11 @@ function AppCard(props) {
             {props.lst.map(function (a, i) {
 
                 let date = new Date(a.timestamp);
+                let check = a.status === props.status;
+                let isCancel = "Scheduled" === a.status;
+                if (!check) {
+                    return null
+                }
                 return (
 
                     <div style={{ border: "1px solid black", margin: "10px", padding: "10px", minWidth: "20%" }}>
@@ -221,16 +263,16 @@ function AppCard(props) {
                         <div style={{ display: "flex", flexFlow: "row wrap", justifyContent: "space-evenly" }}>
 
                             {!props.isUpcoming ? <>
-                                <Button onClick={
+
+
+                                {isCancel ? <Button onClick={
                                     () => {
                                         a.status = "Cancelled";
                                         props.func(a);
+                                    }}>Cancel </Button> : null}
 
 
 
-                                    }
-
-                                }>Cancel </Button>
                                 <Button >Details</Button>
                             </> : <>
 
@@ -240,6 +282,7 @@ function AppCard(props) {
                     </div>
 
                 )
+
             }
 
             )}
