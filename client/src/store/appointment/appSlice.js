@@ -1,9 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { getAllInvites, getAllApp, addAppt } from './appApi';
-import PairingHeap from "../../pairingHeap";
+import { getAllApp, addAppt, updateAppt } from './appApi';
+// import PairingHeap from "../../pairingHeap";
 
 const initialState = {
-    appt: new PairingHeap(),
+    appt: [],
     invites: [],
     status: 'idle',
 };
@@ -42,19 +42,17 @@ export const createApp = createAsyncThunk(
 );
 
 
-
-
-
-
-export const fetchInvites = createAsyncThunk(
-    'appoint/fetch',
-    async (uid) => {
-        const response = await getAllInvites(uid);
-        // The value we return becomes the `fulfilled` action payload
+export const updateApp =createAsyncThunk(
+    'appoint/UpApp',
+    async (data) => {
+   
+        const response = await updateAppt(data);
 
         return response;
     }
 );
+
+
 
 
 
@@ -68,7 +66,7 @@ export const appSlice = createSlice({
         // Use the PayloadAction type to declare the contents of `action.payload`
 
         flushApp: (state) => {
-            state.appt = new PairingHeap();
+            state.appt = [];
         },
     },
 
@@ -81,15 +79,10 @@ export const appSlice = createSlice({
                 state.status = 'loading';
             })
             .addCase(fetchApp.fulfilled, (state, action) => {
-                // console.log("payload.  ", action.payload);
+     
                 state.status = 'idle';
-                let temp_apt = action.payload;
-                state.appt = new PairingHeap();
-                for (let i = 0; i < temp_apt.length; i++) {
-                    let ap = temp_apt[i];
-                    let key = ap.timestamp;
-                    state.appt.insert(key, ap);
-                }
+                state.appt = action.payload;
+               
 
             })
 
@@ -97,28 +90,39 @@ export const appSlice = createSlice({
                 state.status = 'loading';
             })
             .addCase(createApp.fulfilled, (state, action) => {
-                // console.log("payload.  ", action.payload);
-
                 state.status = 'idle';
-                let ap = action.payload;
-                let key = ap.timestamp;
-                state.appt.insert(key, ap);
-
-                // console.log("satte.     ", state.appt);
+                state.appt.push(action.payload);
             })
 
 
-
-
-
-            .addCase(fetchInvites.pending, (state) => {
+            .addCase(updateApp.pending, (state) => {
                 state.status = 'loading';
             })
-            .addCase(fetchInvites.fulfilled, (state, action) => {
-                // console.log("payload.  ", action.payload);
+            .addCase(updateApp.fulfilled, (state, action) => {
                 state.status = 'idle';
-                state.invites = action.payload;
-            });
+                let arr = action.payload;
+                console.log(action.payload)
+                let data = arr[0];
+                let i = arr[1];
+ 
+                console.log(i,", ",data);
+                console.log("CASE")
+      
+                state.appt[i] = data;
+            })
+
+
+
+
+
+            // .addCase(fetchInvites.pending, (state) => {
+            //     state.status = 'loading';
+            // })
+            // .addCase(fetchInvites.fulfilled, (state, action) => {
+            //     // console.log("payload.  ", action.payload);
+            //     state.status = 'idle';
+            //     state.invites = action.payload;
+            // });
 
     },
 
@@ -132,7 +136,7 @@ export const { flushApp } = appSlice.actions;
 
 
 export const selectAppts = (state) => state.appointment.appt;
-export const selectInvites = (state) => state.appointment.invites;
+// export const selectInvites = (state) => state.appointment.invites;
 
 
 // We can also write thunks by hand, which may contain both sync and async logic.

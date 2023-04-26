@@ -6,7 +6,7 @@ import {
     fetchAll,
     // selectAll
 } from '../store/user/authSlice';
-import { fetchApp, selectAppts, createApp } from '../store/appointment/appSlice';
+import { fetchApp, selectAppts, createApp, updateApp } from '../store/appointment/appSlice';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import DateTimePicker from 'react-datetime-picker';
@@ -14,7 +14,8 @@ import 'react-datetime-picker/dist/DateTimePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import 'react-clock/dist/Clock.css';
 import { Form } from "react-bootstrap";
-
+import PairingHeap from "../pairingHeap";
+import { or } from "firebase/firestore";
 
 
 
@@ -52,45 +53,82 @@ function AppointmentScreen() {
     // console.log(UsersArr);
 
     var user = useSelector(selectUser);
-    var myAppt = useSelector(selectAppts);
+    const myAppt = useSelector(selectAppts);
     // console.log(myAppt);
 
+    const [ListOfAppointments, setListOfApp] = useState([]);
+
+    const [queue, setQueue] = useState(new PairingHeap());
+    const [next, setNext] = useState(null);
+
+
     const dispatch = useDispatch();
-    const [tempApt, setTempApt] = useState(myAppt);
     const [show, setShow] = useState(false);
     const [subject, setSubject] = useState("NEW MEETING");
     const [message, setMessage] = useState("Please accept my appointment request.");
     const [datetime, setDateTime] = useState(new Date());
-    const [email, setEmail] = useState("example@gmail.com");
+    const [name, setName] = useState("example@gmail.com");
+
+
+    useEffect(() => {
+        if (myAppt.length > 0) {
+            let order = [];
+            let q = new PairingHeap;
+            for (let i = 0; i < myAppt.length; i++) {
+                let a = { ...myAppt[i], ind: i };
+                // a.ind = i;
+                // console.log("ind ",a)
+                q.insert(a.timestamp, a);
+
+            }
+            setQueue(Object.assign({}, q));
+
+            while (!q.is_empty()) {
+                order.push(q.delete_min());
+            }
+            setNext(order[0]);
+            setListOfApp(order);
+            // console.log("next", next)
+        }
+    }, [myAppt])
 
 
     useEffect(() => {
 
         dispatch(fetchAll(user.uid));
-
         dispatch(fetchApp(user.email));
-        console.log(69)
+
     }, [])
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+
     const handleSubmit = () => {
-        let host_email = user.email;
+
         let aptData =
         {
-            subject: subject, message: message, datetime: datetime, timestamp: datetime.getTime(), people: [host_email, email], status: "Scheduled", taken: 0
+            subject: subject, message: message, timestamp: datetime.getTime(), host: user.email, with: name, status: "Scheduled",
         }
         dispatch(createApp(aptData))
         handleClose();
     }
+    const updateDetails = (data) => {
+        dispatch(updateApp(data))
 
+    }
 
 
     return (
         <div>
-            <h1>{user.name}</h1>
 
 
+
+
+
+            <h1>Upcoming</h1>
+
+
+            {next ? <AppCard lst={[next]} isUpcoming={true} /> : null}
 
 
             <>
@@ -117,7 +155,7 @@ function AppointmentScreen() {
 
                             <Form.Group>
                                 <Form.Label>With:</Form.Label>
-                                <Form.Control type="email" placeholder="example@abc.com" value={email} onChange={(event) => setEmail(event.target.value)} />
+                                <Form.Control type="text" placeholder="Sir Qasim" value={name} onChange={(event) => setName(event.target.value)} />
                             </Form.Group>
 
 
@@ -128,7 +166,7 @@ function AppointmentScreen() {
 
                             <Form.Group>
                                 <Form.Label>Message:</Form.Label>
-                                <Form.Control type="text" placeholder="Message" value={message} onChange={(event) => setMessage(event.target.value)} />
+                                <Form.Control type="text" placeholder="Enter Message" value={message} onChange={(event) => setMessage(event.target.value)} />
                             </Form.Group>
 
 
@@ -150,54 +188,62 @@ function AppointmentScreen() {
                 </Modal>
             </>
 
+            <h1>All Appointments</h1>
 
-
-
-
-
-            {/* {!myAppt ?
-                <h2>NONE</h2> :
-                <ApptComponent appt={myAppt} />
-            } */}
-            <h1>Your Appointments</h1>
-            <div style={{ border: "1px solid black", display: "flex", flexFlow: "row wrap", justifyContent: "space-evenly" }}>
-
-
-                {myAppt.lst.map(function (a, i) {
-
-                    let ind = a.people.indexOf(user.email);
-
-                    let ppl = a.people.splice(ind, 1);
-                    ppl = ppl[0];
-                    let date = new Date(a.timestamp);
-
-                    return (
-
-                        <div style={{ border: "1px solid black", margin: "10px", padding: "10px" }}>
-                            <p> {a.id} </p>
-                            <p> {ppl} </p>
-                            <p> {date.toDateString()} </p>
-                            <p> {date.toTimeString()} </p>
-                            <div style={{ display: "flex", flexFlow: "row wrap", justifyContent: "space-evenly" }}>
-                                <Button color="#FF0000">Cancel </Button>
-                                <Button onClick={() => {
-                                    let d = new Date();
-                                    if (a.timestamp < d.getTime()) {
-                                        alert("edit")
-                                    }
-
-                                }}>Edit Appointment</Button>
-                            </div>
-                        </div>
-                    )
-                }
-
-                )}
-            </div>
-
+            <AppCard lst={ListOfAppointments} isUpcoming={false} func={updateDetails} />
 
         </div>
 
+    )
+}
+
+
+function AppCard(props) {
+    return (
+        <div style={{
+            border: !props.isUpcoming ? "1px solid black" : "none",
+
+            display: "flex", flexFlow: "row wrap", justifyContent: "space-evenly"
+        }}>
+
+
+            {props.lst.map(function (a, i) {
+
+                let date = new Date(a.timestamp);
+                return (
+
+                    <div style={{ border: "1px solid black", margin: "10px", padding: "10px", minWidth: "20%" }}>
+                        <b> {a.ind} </b>
+                        <p><b>With: </b> {a.with} </p>
+                        <p> {date.toLocaleDateString()} </p>
+                        <p> {date.toLocaleTimeString()} </p>
+                        <p> {a.status} </p>
+                        <div style={{ display: "flex", flexFlow: "row wrap", justifyContent: "space-evenly" }}>
+
+                            {!props.isUpcoming ? <>
+                                <Button onClick={
+                                    () => {
+                                        a.status = "Cancelled";
+                                        props.func(a);
+
+
+
+                                    }
+
+                                }>Cancel </Button>
+                                <Button >Details</Button>
+                            </> : <>
+
+                                <p>{a.message}</p>
+                            </>}
+                        </div>
+                    </div>
+
+                )
+            }
+
+            )}
+        </div>
     )
 }
 

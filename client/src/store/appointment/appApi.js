@@ -8,7 +8,7 @@ export async function getAllApp(email) {
 
     var appts = []
 
-    const q = query(collection(db, "appointments"), where("people", "array-contains", email));
+    const q = query(collection(db, "appointments"), where("host", "==", email));
     const querySnapshot = await getDocs(q);
 
     querySnapshot.forEach((doc) => {
@@ -34,6 +34,32 @@ export async function addAppt(appt) {
     appt.id = docRef.id;
 
     return appt;
+}
+
+export async function updateAppt(appt) {
+
+    let ind = appt.ind;
+    console.log(1,ind);
+    delete appt.ind;
+    console.log(2,ind);
+
+
+    console.log("here");
+    await setDoc(doc(db, "appointments", appt.id), appt)
+        .then((document) => {
+    
+
+            return [appt,ind];
+        }
+        )
+        .catch((error) => {
+            const errorMessage = error.message;
+            alert(errorMessage);
+        });
+
+        
+        return [appt,ind];
+
 }
 
 
