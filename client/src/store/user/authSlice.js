@@ -5,7 +5,7 @@ import HashTable from '../../hashtable';
 
 const initialState = {
     value: null,
-    AllUsers: new HashTable(),
+    // AllUsers: new HashTable(),
     status: 'idle',
 };
 
@@ -137,19 +137,19 @@ export const authSlice = createSlice({
 
 
 
-            .addCase(fetchAll.pending, (state) => {
-                state.status = 'loading';
-            })
-            .addCase(fetchAll.fulfilled, (state, action) => {
-                state.status = 'idle';
-                let data = action.payload;
-                for (let i = 0; i < data.length; i++) {
-                    let usr = data[i];
-                    state.AllUsers.put(usr.email, usr);
-                }
+            // .addCase(fetchAll.pending, (state) => {
+            //     state.status = 'loading';
+            // })
+            // .addCase(fetchAll.fulfilled, (state, action) => {
+            //     state.status = 'idle';
+            //     let data = action.payload;
+            //     for (let i = 0; i < data.length; i++) {
+            //         let usr = data[i];
+            //         state.AllUsers.put(usr.email, usr);
+            //     }
 
-                // state.AllUsers = action.payload;
-            });
+            //     // state.AllUsers = action.payload;
+            // });
     },
 
 });

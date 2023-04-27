@@ -1,7 +1,8 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import {  useDispatch } from 'react-redux';
 import {
-    logoutUser, selectUser
+    logoutUser,
+    //  selectUser
 } from '../store/user/authSlice';
 import { Nav, Navbar, NavDropdown } from 'react-bootstrap';
 
@@ -66,7 +67,7 @@ function NavBar(props) {
 
 
                         <NavDropdown.Item onClick={() => { navigateScreen("/profile") }}>Profile</NavDropdown.Item>
-                        <NavDropdown.Item onClick={() => { navigateScreen("/notification") }}>Notifications</NavDropdown.Item>
+                        {/* <NavDropdown.Item onClick={() => { navigateScreen("/notification") }}>Notifications</NavDropdown.Item> */}
 
 
                         <NavDropdown.Divider />

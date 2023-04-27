@@ -39,12 +39,9 @@ export async function addAppt(appt) {
 export async function updateAppt(appt) {
 
     let ind = appt.ind;
-    console.log(1,ind);
+    
     delete appt.ind;
-    console.log(2,ind);
 
-
-    console.log("here");
     await setDoc(doc(db, "appointments", appt.id), appt)
         .then((document) => {
     

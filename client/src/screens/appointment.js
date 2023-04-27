@@ -15,7 +15,6 @@ import 'react-calendar/dist/Calendar.css';
 import 'react-clock/dist/Clock.css';
 import { Form } from "react-bootstrap";
 import PairingHeap from "../pairingHeap";
-import { or } from "firebase/firestore";
 
 
 
@@ -49,17 +48,16 @@ import { or } from "firebase/firestore";
 
 function AppointmentScreen() {
 
-    // var UsersArr = useSelector(selectAll);
-    // console.log(UsersArr);
 
     var user = useSelector(selectUser);
     const myAppt = useSelector(selectAppts);
-    // console.log(myAppt);
+
 
     const [ListOfAppointments, setListOfApp] = useState([]);
 
     const [queue, setQueue] = useState(new PairingHeap());
     const [next, setNext] = useState(null);
+
 
 
     const dispatch = useDispatch();
@@ -69,11 +67,6 @@ function AppointmentScreen() {
     const [datetime, setDateTime] = useState(new Date());
     const [name, setName] = useState("example@gmail.com");
 
-
-
-    // const [showCancel, setShowCancel] = useState(false);
-    // const [showTaken, setShowTaken] = useState(false);
-    // const [showPending, setShowPending] = useState(false);
     const [selectedOption, setSelectedOption] = useState("Scheduled");
 
 
@@ -102,7 +95,7 @@ function AppointmentScreen() {
 
     useEffect(() => {
 
-        dispatch(fetchAll(user.uid));
+        // dispatch(fetchAll(user.uid));
         dispatch(fetchApp(user.email));
 
     }, [])
@@ -225,10 +218,19 @@ function AppointmentScreen() {
                         checked={selectedOption === "Taken"}
                         onChange={(e) => setSelectedOption(e.target.value)}
                     />
+                    <Form.Check
+                        inline
+                        name="group1"
+                        label="Missed"
+                        type={"radio"}
+                        id={`inline-radio-3`}
+                        value="Missed"
+                        checked={selectedOption === "Missed"}
+                        onChange={(e) => setSelectedOption(e.target.value)}
+                    />
                 </div>
             </Form>
             <AppCard lst={ListOfAppointments} isUpcoming={false} func={updateDetails} status={selectedOption} />
-
         </div>
 
     )
@@ -236,6 +238,12 @@ function AppointmentScreen() {
 
 
 function AppCard(props) {
+
+    const [detailApp, setDetailApp] = useState({});
+
+
+    const [detailShow, setDetailShow] = useState(false);
+
     return (
         <div style={{
             border: !props.isUpcoming ? "1px solid black" : "none",
@@ -246,23 +254,30 @@ function AppCard(props) {
 
             {props.lst.map(function (a, i) {
 
+                if (a.timestamp < (new Date()).getTime() && a.status == "Scheduled") {
+                    a.status = "Missed";
+                    console.log("misss", a);
+                    props.func(a);
+                }
+
                 let date = new Date(a.timestamp);
                 let check = a.status === props.status;
                 let isCancel = "Scheduled" === a.status;
+                let isMissed = "Missed" === a.status;
                 if (!check) {
                     return null
                 }
                 return (
 
                     <div style={{ border: "1px solid black", margin: "10px", padding: "10px", minWidth: "20%" }}>
-                        <b> {a.ind} </b>
+                        <b> {a.id} </b>
                         <p><b>With: </b> {a.with} </p>
                         <p> {date.toLocaleDateString()} </p>
                         <p> {date.toLocaleTimeString()} </p>
                         <p> {a.status} </p>
                         <div style={{ display: "flex", flexFlow: "row wrap", justifyContent: "space-evenly" }}>
 
-                            {!props.isUpcoming ? <>
+                            <>
 
 
                                 {isCancel ? <Button onClick={
@@ -271,13 +286,17 @@ function AppCard(props) {
                                         props.func(a);
                                     }}>Cancel </Button> : null}
 
+                                {isMissed ? <Button onClick={
+                                    () => {
+                                        a.status = "Taken";
+                                        props.func(a);
+                                    }}>Mark Taken </Button> : null}
 
 
-                                <Button >Details</Button>
-                            </> : <>
 
-                                <p>{a.message}</p>
-                            </>}
+                                <Button onClick={() => { setDetailApp(a); setDetailShow(true); console.log("details", detailApp); }} >Details</Button>
+                            </>
+
                         </div>
                     </div>
 
@@ -286,7 +305,79 @@ function AppCard(props) {
             }
 
             )}
+            <DetailsModal show={detailShow} setShow={setDetailShow} appt={detailApp} func={props.func} />
+
         </div>
+    )
+}
+
+
+function DetailsModal(props) {
+
+    const appt = props.appt;
+    let date = new Date(appt.timestamp);
+
+    const hideModal = () => {
+        props.setShow(false);
+    }
+
+    // const markTaken = (a) => {
+    //     // let tmp = Object.assign({}, appt);
+    //     // const tmp = Object.assign({}, appt);
+    //     a.status = "Taken";
+
+    //     console.log("mark func", a);
+    //     props.func(a);
+
+
+    // }
+
+
+
+    return (
+
+        <>
+            <Modal show={props.show} onHide={hideModal} size="lg">
+                <Modal.Header closeButton>
+                    <Modal.Title>Appointment Details</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+
+
+
+
+                    {/* <AddAppointment /> */}
+
+                    <div>
+
+                        <h1>{appt.ind}</h1>
+
+                        <p><b>With: </b> {appt.with} </p>
+                        <p><b>Date: </b> {date.toLocaleDateString()} </p>
+                        <p><b>Time: </b> {date.toLocaleTimeString()} </p>
+                        <p> <b>Status: </b> {appt.status} </p>
+                        <p><b>Message: </b>  {appt.message} </p>
+
+                    </div>
+
+                    {/*  */}
+
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={hideModal}>
+                        Close
+                    </Button>
+
+
+                    {/* {isMissed ? <Button variant="primary" onClick={() => { console.log("button", appt); markTaken(appt); }}>
+                        Mark Taken
+                    </Button> : null} */}
+
+
+                </Modal.Footer>
+            </Modal>
+        </>
+
     )
 }
 
