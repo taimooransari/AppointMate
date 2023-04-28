@@ -62,10 +62,10 @@ function AppointmentScreen() {
 
     const dispatch = useDispatch();
     const [show, setShow] = useState(false);
-    const [subject, setSubject] = useState("NEW MEETING");
-    const [message, setMessage] = useState("Please accept my appointment request.");
+    const [subject, setSubject] = useState("");
+    const [message, setMessage] = useState("");
     const [datetime, setDateTime] = useState(new Date());
-    const [name, setName] = useState("example@gmail.com");
+    const [name, setName] = useState("");
 
     const [selectedOption, setSelectedOption] = useState("Scheduled");
 
@@ -111,6 +111,11 @@ function AppointmentScreen() {
         }
         dispatch(createApp(aptData))
         handleClose();
+
+        setSubject("");
+        setMessage("");
+        setDateTime(new Date());
+        setName("");
     }
     const updateDetails = (data) => {
         dispatch(updateApp(data))
@@ -246,7 +251,7 @@ function AppCard(props) {
 
     return (
         <div style={{
-            border: !props.isUpcoming ? "1px solid black" : "none",
+
 
             display: "flex", flexFlow: "row wrap", justifyContent: "space-evenly"
         }}>
@@ -270,7 +275,7 @@ function AppCard(props) {
                 return (
 
                     <div style={{ border: "1px solid black", margin: "10px", padding: "10px", minWidth: "20%" }}>
-                        <b> {a.id} </b>
+
                         <p><b>With: </b> {a.with} </p>
                         <p> {date.toLocaleDateString()} </p>
                         <p> {date.toLocaleTimeString()} </p>
@@ -280,13 +285,17 @@ function AppCard(props) {
                             <>
 
 
-                                {isCancel ? <Button onClick={
+                                {isCancel ? <Button 
+                                variant="danger"
+                                onClick={
                                     () => {
                                         a.status = "Cancelled";
                                         props.func(a);
                                     }}>Cancel </Button> : null}
 
-                                {isMissed ? <Button onClick={
+                                {isMissed ? <Button
+                                variant="success"
+                                onClick={
                                     () => {
                                         a.status = "Taken";
                                         props.func(a);
@@ -321,16 +330,7 @@ function DetailsModal(props) {
         props.setShow(false);
     }
 
-    // const markTaken = (a) => {
-    //     // let tmp = Object.assign({}, appt);
-    //     // const tmp = Object.assign({}, appt);
-    //     a.status = "Taken";
-
-    //     console.log("mark func", a);
-    //     props.func(a);
-
-
-    // }
+    
 
 
 
@@ -355,7 +355,7 @@ function DetailsModal(props) {
                         <p><b>With: </b> {appt.with} </p>
                         <p><b>Date: </b> {date.toLocaleDateString()} </p>
                         <p><b>Time: </b> {date.toLocaleTimeString()} </p>
-                        <p> <b>Status: </b> {appt.status} </p>
+                        <p><b>Status: </b> {appt.status} </p>
                         <p><b>Message: </b>  {appt.message} </p>
 
                     </div>

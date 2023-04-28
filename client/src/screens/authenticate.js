@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Button, Spinner } from 'react-bootstrap';
 
 import { useSelector, useDispatch } from 'react-redux';
@@ -11,12 +11,12 @@ import {
 
 
 function LoaderComponent() {
-  return (
-    <div>
-        <Spinner animation="border" variant="dark"/>
+    return (
+        <div>
+            <Spinner animation="border" variant="dark" />
 
-    </div>
-  );
+        </div>
+    );
 }
 
 
@@ -31,17 +31,18 @@ function AuthScreen() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-// useEffect(() => {
-//     dispatch(login({ email: "v@gmail.com", password: "12345678" }));
 
-// }, [])
-
-
-
+    const [isLoading, setIsLoading] = useState(false);
 
 
     const handleSubmit = (event) => {
         event.preventDefault();
+
+
+
+        setIsLoading(true);
+
+
         // handle form submission logic here
         if (isLogin) {
             dispatch(login({ email: email, password: password }));
@@ -53,6 +54,8 @@ function AuthScreen() {
         setName("");
         setEmail("");
         setPassword("");
+
+        setIsLoading(false);
     };
 
     const handleModeSwitch = () => {
@@ -61,40 +64,32 @@ function AuthScreen() {
 
     return (
         <div>
+            {!isLoading ?
 
-            {user ? (
-                <div>
-                    {/* <p>{user.name}</p> */}
-                    <p>hi, {user.name}</p>
-                </div>) :
-                <h2>NONE</h2>
-            }
-
-
-            <Form onSubmit={handleSubmit} className="p-3">
-                {!isLogin && (
-                    <Form.Group controlId="formName">
-                        <Form.Label>Name</Form.Label>
-                        <Form.Control type="text" placeholder="Enter your name" value={name} onChange={(event) => setName(event.target.value)} />
+                <Form onSubmit={handleSubmit} className="p-3">
+                    {!isLogin && (
+                        <Form.Group controlId="formName">
+                            <Form.Label>Name</Form.Label>
+                            <Form.Control type="text" placeholder="Enter your name" value={name} onChange={(event) => setName(event.target.value)} />
+                        </Form.Group>
+                    )}
+                    <Form.Group controlId="formEmail">
+                        <Form.Label>Email address</Form.Label>
+                        <Form.Control type="email" placeholder="Enter email" value={email} onChange={(event) => setEmail(event.target.value)} />
                     </Form.Group>
-                )}
-                <Form.Group controlId="formEmail">
-                    <Form.Label>Email address</Form.Label>
-                    <Form.Control type="email" placeholder="Enter email" value={email} onChange={(event) => setEmail(event.target.value)} />
-                </Form.Group>
-                <Form.Group controlId="formPassword">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control type="password" placeholder="Password" value={password} onChange={(event) => setPassword(event.target.value)} />
-                </Form.Group>
-                <Button variant="primary" type="submit">
-                    {isLogin ? 'Log in' : 'Sign up'}
-                </Button>
-                <Button variant="link" onClick={handleModeSwitch}>
-                    {isLogin ? 'Create an account' : 'Already have an account?'}
-                </Button>
-            </Form>
-             
-            <LoaderComponent/> 
+                    <Form.Group controlId="formPassword">
+                        <Form.Label>Password</Form.Label>
+                        <Form.Control type="password" placeholder="Password" value={password} onChange={(event) => setPassword(event.target.value)} />
+                    </Form.Group>
+                    <Button variant="primary" type="submit">
+                        {isLogin ? 'Log in' : 'Sign up'}
+                    </Button>
+                    <Button variant="link" onClick={handleModeSwitch}>
+                        {isLogin ? 'Create an account' : 'Already have an account?'}
+                    </Button>
+                </Form>
+                :
+                <LoaderComponent />}
         </div>
     );
 }
