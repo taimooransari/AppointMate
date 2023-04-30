@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    selectUser,
-    fetchAll,
-    // selectAll
+    selectUser
 } from '../store/user/authSlice';
 import { fetchApp, selectAppts, createApp, updateApp } from '../store/appointment/appSlice';
 import Button from 'react-bootstrap/Button';
@@ -17,33 +15,6 @@ import { Form } from "react-bootstrap";
 import PairingHeap from "../pairingHeap";
 
 
-
-
-// function ApptComponent(props) {
-
-
-//     const appts = props.appt.lst;
-//     console.log(appts);
-//     return (
-//         <div style={{ border: "1px solid black", display: "flex", flexFlow: "column wrap" }}>
-//             <h1>Your Appointments</h1>
-//             {appts.map(function (a, i) {
-
-//                 return (
-//                     // style={{border: "1px solid black", display: "inline"}}
-//                     <div >
-//                         {a.id}
-//                     </div>
-//                 )
-//             }
-
-//             )}
-//         </div>
-
-
-//     );
-
-// }
 
 
 function AppointmentScreen() {
@@ -76,8 +47,6 @@ function AppointmentScreen() {
             let q = new PairingHeap;
             for (let i = 0; i < myAppt.length; i++) {
                 let a = { ...myAppt[i], ind: i };
-                // a.ind = i;
-                // console.log("ind ",a)
                 q.insert(a.timestamp, a);
 
             }
@@ -88,14 +57,12 @@ function AppointmentScreen() {
             }
             setNext(order[0]);
             setListOfApp(order);
-            // console.log("next", next)
         }
     }, [myAppt])
 
 
     useEffect(() => {
 
-        // dispatch(fetchAll(user.uid));
         dispatch(fetchApp(user.email));
 
     }, [])
@@ -125,15 +92,7 @@ function AppointmentScreen() {
 
     return (
         <div>
-
-
-
-
-
             <h1>All Appointments</h1>
-
-
-
             <>
                 <Button variant="primary" onClick={handleShow}>
                     Add Appointment
@@ -145,13 +104,8 @@ function AppointmentScreen() {
                     </Modal.Header>
                     <Modal.Body>
 
-
-
-
-                        {/* <AddAppointment /> */}
-
                         <div>
-                            {/* <Form onSubmit={handleSubmit} className="p-3"> */}
+                          
                             <Form.Label>Appointment Time:</Form.Label><br />
                             <DateTimePicker onChange={setDateTime} value={datetime} minDate={new Date()} amPmAriaLabel="Select AM/PM" />
 
@@ -173,11 +127,7 @@ function AppointmentScreen() {
                             </Form.Group>
 
 
-                            {/* </Form> */}
-
                         </div>
-
-                        {/*  */}
 
                     </Modal.Body>
                     <Modal.Footer>
@@ -285,25 +235,25 @@ function AppCard(props) {
                             <>
 
 
-                                {isCancel ? <Button 
-                                variant="danger"
-                                onClick={
-                                    () => {
-                                        a.status = "Cancelled";
-                                        props.func(a);
-                                    }}>Cancel </Button> : null}
+                                {isCancel ? <Button
+                                    variant="danger"
+                                    onClick={
+                                        () => {
+                                            a.status = "Cancelled";
+                                            props.func(a);
+                                        }}>Cancel </Button> : null}
 
                                 {isMissed ? <Button
-                                variant="success"
-                                onClick={
-                                    () => {
-                                        a.status = "Taken";
-                                        props.func(a);
-                                    }}>Mark Taken </Button> : null}
+                                    variant="success"
+                                    onClick={
+                                        () => {
+                                            a.status = "Taken";
+                                            props.func(a);
+                                        }}>Mark Taken </Button> : null}
 
 
 
-                                <Button onClick={() => { setDetailApp(a); setDetailShow(true); console.log("details", detailApp); }} >Details</Button>
+                                <Button onClick={() => { setDetailApp(a); setDetailShow(true); }} >Details</Button>
                             </>
 
                         </div>
@@ -330,7 +280,7 @@ function DetailsModal(props) {
         props.setShow(false);
     }
 
-    
+
 
 
 
@@ -350,7 +300,7 @@ function DetailsModal(props) {
 
                     <div>
 
-                        <h1>{appt.ind}</h1>
+                        <h1>ID: {appt.id}</h1>
 
                         <p><b>With: </b> {appt.with} </p>
                         <p><b>Date: </b> {date.toLocaleDateString()} </p>
